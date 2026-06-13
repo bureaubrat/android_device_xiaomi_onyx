@@ -1,0 +1,40 @@
+name: Migrate Onyx to AxionOS
+
+on:
+  # Allows you to trigger this migration manually from the GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  migrate-tree:
+    runs-on: ubuntu-latest
+    
+    # Permissions required to commit the changed files back to your repository
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Make Script Executable
+        run: chmod +x migrate_onyx.sh
+
+      - name: Execute AxionOS Migration Script
+        run: ./migrate_onyx.sh
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Check if there are actual text changes before trying to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "chore: automate device and vendor makefile migrations for AxionOS"
+            git push origin HEAD:${{ github.ref }}
+            echo "✅ Successfully migrated and pushed changes back to repository."
+          else
+            echo "ℹ️ No changes detected. Makefiles already match target structure."
+          fi
