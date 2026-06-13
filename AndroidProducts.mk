@@ -4,4 +4,7 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/lineage_onyx.mk
+    $(LOCAL_DIR)/axion_onyx.mk
+
+COMMON_LUNCH_CHOICES := \
+    axion_onyx-userdebug
